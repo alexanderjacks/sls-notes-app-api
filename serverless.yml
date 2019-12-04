@@ -75,3 +75,14 @@ functions:
           method: put
           cors: true
           authorizer: aws_iam
+  delete:
+    # API endpoint calls /delete.js
+    # - path: url path is /notes/{id}
+    # - HTTP method: DELETE request
+    handler: delete.main
+    events:
+      - http:
+          path: notes/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam

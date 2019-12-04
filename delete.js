@@ -1,26 +1,19 @@
-import uuid from "uuid";
 import * as dynamoDbLib from "./libs/dynamodb-lib";
 import { success, failure } from "./libs/response-lib";
 
 export async function main( event, context ) {
-  const data = JSON.parse(event.body);
-
   const params = {
     TableName: process.env.tableName,
-    // 'Item userId': id's get federated via Cognito Identity Pool
-    //        we use the Pool identity id
-    //        as the userId of the authenticated user
-    Item: {
+    // Cognito Pool is the Key id (partition key)
+    // noteId in Dynamo (sort key)
+    Key: {
       userId: event.requestContext.identity.cognitoIdentityId,
-      noteId: uuid.v1(),
-      content: data.content,
-      attachment: data.attachment,
-      createdAt: Date.now()
+      noteId: event.pathParameters.id
     }
   };
   // moved header, error functions to to libs/
   try {
-    await dynamoDbLib.call("put", params);
+    await dynamoDbLib.call("delete", params);
     return success(params.Item);
   } catch (e) {
     return failure({ status:false });
