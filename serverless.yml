@@ -18,6 +18,7 @@ provider:
   # in /.env
   environment:
     tableName: notes
+    stripeSecretKey: ${env:STRIPE_SECRET_KEY}
 # Lambdas granted permission to access DynamoDB
   iamRoleStatements:
     - Effect: Allow
@@ -84,5 +85,16 @@ functions:
       - http:
           path: notes/{id}
           method: delete
+          cors: true
+          authorizer: aws_iam
+  billing:
+    # API endpoint calls /billing.js
+    # - path: url path is /billing
+    # - HTTP method: POST request
+    handler: billing.main
+    events:
+      - http:
+          path: billing
+          method: post
           cors: true
           authorizer: aws_iam
